@@ -44,6 +44,42 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: continent; Type: TABLE; Schema: public; Owner: freecodecamp
+--
+
+CREATE TABLE public.continent (
+    continent_id integer NOT NULL,
+    name character varying(40) NOT NULL,
+    distace_to_space bigint NOT NULL,
+    population integer NOT NULL
+);
+
+
+ALTER TABLE public.continent OWNER TO freecodecamp;
+
+--
+-- Name: continent_continent_id_seq; Type: SEQUENCE; Schema: public; Owner: freecodecamp
+--
+
+CREATE SEQUENCE public.continent_continent_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.continent_continent_id_seq OWNER TO freecodecamp;
+
+--
+-- Name: continent_continent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
+--
+
+ALTER SEQUENCE public.continent_continent_id_seq OWNED BY public.continent.continent_id;
+
+
+--
 -- Name: galaxy; Type: TABLE; Schema: public; Owner: freecodecamp
 --
 
@@ -92,7 +128,8 @@ CREATE TABLE public.moon (
     distance integer,
     location integer,
     visible_earth boolean NOT NULL,
-    heat boolean NOT NULL
+    heat boolean NOT NULL,
+    planet_id integer
 );
 
 
@@ -129,8 +166,9 @@ CREATE TABLE public.planet (
     name character varying(40),
     location integer,
     distance integer,
-    description character varying(150) NOT NULL,
-    age_in_millions_of_years bigint NOT NULL
+    description text NOT NULL,
+    age_in_millions_of_years bigint NOT NULL,
+    star_id integer
 );
 
 
@@ -168,7 +206,8 @@ CREATE TABLE public.star (
     distance integer,
     location integer,
     heat boolean NOT NULL,
-    visible_earth boolean NOT NULL
+    visible_earth boolean NOT NULL,
+    galaxy_id integer
 );
 
 
@@ -194,6 +233,13 @@ ALTER TABLE public.star_id_seq OWNER TO freecodecamp;
 --
 
 ALTER SEQUENCE public.star_id_seq OWNED BY public.star.star_id;
+
+
+--
+-- Name: continent continent_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.continent ALTER COLUMN continent_id SET DEFAULT nextval('public.continent_continent_id_seq'::regclass);
 
 
 --
@@ -225,6 +271,16 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 
 
 --
+-- Data for Name: continent; Type: TABLE DATA; Schema: public; Owner: freecodecamp
+--
+
+INSERT INTO public.continent VALUES (1, 'Africa', 100000, 1800000000);
+INSERT INTO public.continent VALUES (4, 'south america', 90000, 10000101);
+INSERT INTO public.continent VALUES (5, 'North America', 80000, 9191828);
+INSERT INTO public.continent VALUES (6, 'Antartica', 1000929, 1000);
+
+
+--
 -- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
@@ -240,71 +296,78 @@ INSERT INTO public.galaxy VALUES (6, 'RED EYES GALAXY', 9000000, 20000000, true,
 -- Data for Name: moon; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.moon VALUES (1, 'europa', 10000000, 1000, true, false);
-INSERT INTO public.moon VALUES (4, 'titan', 10000, 92828291, true, false);
-INSERT INTO public.moon VALUES (5, 'mimas', 10000, 92828291, true, false);
-INSERT INTO public.moon VALUES (6, 'himalia', 2283373, 91910, true, true);
-INSERT INTO public.moon VALUES (9, 'elara', 10000, 92828291, true, false);
-INSERT INTO public.moon VALUES (10, 'elaran', 10000, 92828291, true, false);
-INSERT INTO public.moon VALUES (11, 'Pan', 1000, 81818, true, true);
-INSERT INTO public.moon VALUES (12, 'Pandora', 9000, 81898, true, false);
-INSERT INTO public.moon VALUES (13, 'Daphnis', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (16, 'Tethys', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (17, 'Carpo', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (18, 'methis', 91002, 1818181, true, true);
-INSERT INTO public.moon VALUES (19, 'Pasiphae', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (20, 'Leda', 91002, 1818181, true, true);
-INSERT INTO public.moon VALUES (21, 'Megaclite', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (22, 'Callisto', 91002, 1818181, true, true);
-INSERT INTO public.moon VALUES (25, 'phobos', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (26, 'beimos', 91002, 1818181, true, true);
-INSERT INTO public.moon VALUES (27, 'Naliad', 6000, 81898, false, false);
-INSERT INTO public.moon VALUES (28, 'Neried', 91002, 1818181, true, true);
+INSERT INTO public.moon VALUES (1, 'europa', 10000000, 1000, true, false, NULL);
+INSERT INTO public.moon VALUES (4, 'titan', 10000, 92828291, true, false, NULL);
+INSERT INTO public.moon VALUES (5, 'mimas', 10000, 92828291, true, false, NULL);
+INSERT INTO public.moon VALUES (6, 'himalia', 2283373, 91910, true, true, NULL);
+INSERT INTO public.moon VALUES (9, 'elara', 10000, 92828291, true, false, NULL);
+INSERT INTO public.moon VALUES (10, 'elaran', 10000, 92828291, true, false, NULL);
+INSERT INTO public.moon VALUES (11, 'Pan', 1000, 81818, true, true, NULL);
+INSERT INTO public.moon VALUES (12, 'Pandora', 9000, 81898, true, false, NULL);
+INSERT INTO public.moon VALUES (13, 'Daphnis', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (16, 'Tethys', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (17, 'Carpo', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (18, 'methis', 91002, 1818181, true, true, NULL);
+INSERT INTO public.moon VALUES (19, 'Pasiphae', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (20, 'Leda', 91002, 1818181, true, true, NULL);
+INSERT INTO public.moon VALUES (21, 'Megaclite', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (22, 'Callisto', 91002, 1818181, true, true, NULL);
+INSERT INTO public.moon VALUES (25, 'phobos', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (26, 'beimos', 91002, 1818181, true, true, NULL);
+INSERT INTO public.moon VALUES (27, 'Naliad', 6000, 81898, false, false, NULL);
+INSERT INTO public.moon VALUES (28, 'Neried', 91002, 1818181, true, true, NULL);
 
 
 --
 -- Data for Name: planet; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.planet VALUES (1, 'earth', 9000, 100000, 'Our earth', 1000000000);
-INSERT INTO public.planet VALUES (2, 'venus', 80000, 10000, 'Venus planet', 900000);
-INSERT INTO public.planet VALUES (3, 'Jupiter', 10000, 10000, 'Jupiter planet', 400000);
-INSERT INTO public.planet VALUES (4, 'Mars', 10000, 10000, 'Jupiter planet', 400000);
-INSERT INTO public.planet VALUES (5, 'Mecury', 20000, 80000, 'Mecury  planet', 900000);
-INSERT INTO public.planet VALUES (6, 'Santurn', 30000, 90000, 'Santurn  planet', 600000);
-INSERT INTO public.planet VALUES (8, 'sedna', 1000, 90199191, 'dwarf plannet', 90000000000000);
-INSERT INTO public.planet VALUES (9, 'salacia', 1000, 90199191, 'dwarf plannet', 90000000000000);
-INSERT INTO public.planet VALUES (10, 'pluto', 1000, 90199191, 'pluto plannet', 90000000000000);
-INSERT INTO public.planet VALUES (11, 'elon', 1000, 90199191, 'elon planet', 90000000000000);
-INSERT INTO public.planet VALUES (12, 'paul', 1000, 90199191, 'paul planet', 90000000000000);
-INSERT INTO public.planet VALUES (13, 'Jenny', 100000, 90199191, 'jenny planet', 90000000000000);
-INSERT INTO public.planet VALUES (14, 'Sabturb', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (15, 'Sabturby', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (16, 'ean', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (17, 'caan', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (18, 'xxan', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (19, 'plural', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (20, 'yoko', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (21, 'lido', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (22, 'moko', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (23, 'tesco', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (24, 'london', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (25, 'lidl', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (26, 'asos', 81819, 76677, 'Random', 1991919);
-INSERT INTO public.planet VALUES (27, 'M&S', 81818, 192882, 'Random planet name', 828282888);
-INSERT INTO public.planet VALUES (28, 'Asda', 81819, 76677, 'Random', 1991919);
+INSERT INTO public.planet VALUES (1, 'earth', 9000, 100000, 'Our earth', 1000000000, NULL);
+INSERT INTO public.planet VALUES (2, 'venus', 80000, 10000, 'Venus planet', 900000, NULL);
+INSERT INTO public.planet VALUES (3, 'Jupiter', 10000, 10000, 'Jupiter planet', 400000, NULL);
+INSERT INTO public.planet VALUES (4, 'Mars', 10000, 10000, 'Jupiter planet', 400000, NULL);
+INSERT INTO public.planet VALUES (5, 'Mecury', 20000, 80000, 'Mecury  planet', 900000, NULL);
+INSERT INTO public.planet VALUES (6, 'Santurn', 30000, 90000, 'Santurn  planet', 600000, NULL);
+INSERT INTO public.planet VALUES (8, 'sedna', 1000, 90199191, 'dwarf plannet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (9, 'salacia', 1000, 90199191, 'dwarf plannet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (10, 'pluto', 1000, 90199191, 'pluto plannet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (11, 'elon', 1000, 90199191, 'elon planet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (12, 'paul', 1000, 90199191, 'paul planet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (13, 'Jenny', 100000, 90199191, 'jenny planet', 90000000000000, NULL);
+INSERT INTO public.planet VALUES (14, 'Sabturb', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (15, 'Sabturby', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (16, 'ean', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (17, 'caan', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (18, 'xxan', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (19, 'plural', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (20, 'yoko', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (21, 'lido', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (22, 'moko', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (23, 'tesco', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (24, 'london', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (25, 'lidl', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (26, 'asos', 81819, 76677, 'Random', 1991919, NULL);
+INSERT INTO public.planet VALUES (27, 'M&S', 81818, 192882, 'Random planet name', 828282888, NULL);
+INSERT INTO public.planet VALUES (28, 'Asda', 81819, 76677, 'Random', 1991919, NULL);
 
 
 --
 -- Data for Name: star; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.star VALUES (1, 'Polaris', 1000000, 999999, true, false);
-INSERT INTO public.star VALUES (2, 'Castor', 2000000, 881727, false, false);
-INSERT INTO public.star VALUES (3, 'Sun', 199191, 991991, true, true);
-INSERT INTO public.star VALUES (4, 'Orion', 1000000, 999999, true, false);
-INSERT INTO public.star VALUES (5, 'Poluux', 2000000, 881727, false, false);
-INSERT INTO public.star VALUES (6, 'Antares', 199191, 991991, true, true);
+INSERT INTO public.star VALUES (1, 'Polaris', 1000000, 999999, true, false, NULL);
+INSERT INTO public.star VALUES (2, 'Castor', 2000000, 881727, false, false, NULL);
+INSERT INTO public.star VALUES (3, 'Sun', 199191, 991991, true, true, NULL);
+INSERT INTO public.star VALUES (4, 'Orion', 1000000, 999999, true, false, NULL);
+INSERT INTO public.star VALUES (5, 'Poluux', 2000000, 881727, false, false, NULL);
+INSERT INTO public.star VALUES (6, 'Antares', 199191, 991991, true, true, NULL);
+
+
+--
+-- Name: continent_continent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
+--
+
+SELECT pg_catalog.setval('public.continent_continent_id_seq', 6, true);
 
 
 --
@@ -336,6 +399,14 @@ SELECT pg_catalog.setval('public.star_id_seq', 6, true);
 
 
 --
+-- Name: continent continent_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.continent
+    ADD CONSTRAINT continent_pkey PRIMARY KEY (continent_id);
+
+
+--
 -- Name: galaxy galaxy_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
@@ -349,6 +420,14 @@ ALTER TABLE ONLY public.galaxy
 
 ALTER TABLE ONLY public.moon
     ADD CONSTRAINT moon_pkey PRIMARY KEY (moon_id);
+
+
+--
+-- Name: continent name_uni; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.continent
+    ADD CONSTRAINT name_uni UNIQUE (name);
 
 
 --
@@ -400,19 +479,27 @@ ALTER TABLE ONLY public.star
 
 
 --
--- Name: moon moon_moon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+-- Name: moon moon_planet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.moon
-    ADD CONSTRAINT moon_moon_id_fkey FOREIGN KEY (moon_id) REFERENCES public.planet(planet_id);
+    ADD CONSTRAINT moon_planet_id_fkey FOREIGN KEY (planet_id) REFERENCES public.planet(planet_id);
 
 
 --
--- Name: star star_star_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+-- Name: planet planet_star_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT planet_star_id_fkey FOREIGN KEY (star_id) REFERENCES public.star(star_id);
+
+
+--
+-- Name: star star_galaxy_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.star
-    ADD CONSTRAINT star_star_id_fkey FOREIGN KEY (star_id) REFERENCES public.galaxy(galaxy_id);
+    ADD CONSTRAINT star_galaxy_id_fkey FOREIGN KEY (galaxy_id) REFERENCES public.galaxy(galaxy_id);
 
 
 --
